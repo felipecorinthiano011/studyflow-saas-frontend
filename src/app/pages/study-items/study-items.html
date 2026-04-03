@@ -1,0 +1,48 @@
+<div class="min-h-screen bg-gray-100">
+  <nav class="bg-white shadow px-6 py-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold text-gray-800">StudyFlow</h1>
+    <button (click)="logout()" class="text-sm text-red-500 hover:underline">Sair</button>
+  </nav>
+
+  <div class="max-w-2xl mx-auto mt-8 px-4">
+
+    <!-- Formulário -->
+    <div class="bg-white rounded-2xl shadow p-6 mb-6">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">Novo item de estudo</h2>
+      <input
+        type="text"
+        [(ngModel)]="title"
+        placeholder="Título *"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <textarea
+        [(ngModel)]="description"
+        placeholder="Descrição (opcional)"
+        rows="3"
+        class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
+      ></textarea>
+      <button
+        (click)="onCreate()"
+        [disabled]="loading || !title.trim()"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition disabled:opacity-50"
+      >
+        {{ loading ? 'Salvando...' : 'Adicionar' }}
+      </button>
+    </div>
+
+    <!-- Erro -->
+    <div *ngIf="error" class="mb-4 text-sm text-red-600 text-center">{{ error }}</div>
+
+    <!-- Lista -->
+    <div *ngIf="items.length === 0" class="text-center text-gray-400 mt-10">
+      Nenhum item de estudo ainda.
+    </div>
+
+    <div *ngFor="let item of items" class="bg-white rounded-2xl shadow p-5 mb-4">
+      <h3 class="font-semibold text-gray-800">{{ item.title }}</h3>
+      <p *ngIf="item.description" class="text-sm text-gray-500 mt-1">{{ item.description }}</p>
+      <p class="text-xs text-gray-400 mt-2">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+    </div>
+
+  </div>
+</div>
