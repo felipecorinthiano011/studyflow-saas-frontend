@@ -1,59 +1,68 @@
-# Frontend
+# StudyFlow Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+## Repositórios do Projeto
 
-## Development server
+| Parte | Repositório |
+|-------|-------------|
+| **Backend** (Java Spring Boot) | [felipecorinthiano011/studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) |
+| **Frontend** (Angular + Tailwind) | [felipecorinthiano011/studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) |
 
-To start a local development server, run:
+---
 
+## Descrição
+
+Frontend do **StudyFlow** — SaaS de estudo e aprendizado.  
+Desenvolvido com **Angular** e **Tailwind CSS**, consome a API REST do backend com autenticação via **JWT**.
+
+> **A partir da Semana 4**, o desenvolvimento conta com o suporte do **Claude (Anthropic)** como agente de IA.
+
+---
+
+## Como rodar
+
+### Pré-requisitos
+- Node.js 18+
+- Backend rodando em `http://localhost:8080` ([ver repositório do backend](https://github.com/felipecorinthiano011/studyflow-saas))
+
+### Instalar dependências
 ```bash
-ng serve
+npm install
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+### Rodar em desenvolvimento
 ```bash
-ng generate component component-name
+npx ng serve
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Acesse: `http://localhost:4200`
 
-```bash
-ng generate --help
-```
+---
 
-## Building
+## Tecnologias
 
-To build the project run:
+- Angular 21
+- Tailwind CSS v4
+- TypeScript
+- RxJS
 
-```bash
-ng build
-```
+---
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Plano de desenvolvimento — 8 semanas
 
-## Running unit tests
+### Semana 6 (Atual)
+- Setup do projeto Angular + Tailwind
+- AuthService com login e token JWT no localStorage
+- Interceptor HTTP que injeta Bearer token automaticamente
+- AuthGuard protegendo rotas autenticadas
+- Página de login
+- Página de listagem e criação de study items
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Semana 7
+- CRUD completo no front-end
+- Finalizar autenticação JWT
+- Ajustar estilo com Tailwind
 
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+### Semana 8
+- Refatoração e revisão de segurança
+- Documentação final
+- Deploy inicial (AWS / Docker)
