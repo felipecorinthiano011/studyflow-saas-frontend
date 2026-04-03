@@ -18,6 +18,10 @@ export class StudyItemsComponent implements OnInit {
   loading = false;
   error = '';
 
+  editingId: number | null = null;
+  editTitle = '';
+  editDescription = '';
+
   constructor(
     private studyItemService: StudyItemService,
     private auth: AuthService,
@@ -49,6 +53,41 @@ export class StudyItemsComponent implements OnInit {
         this.error = 'Erro ao criar item.';
         this.loading = false;
       }
+    });
+  }
+
+  startEdit(item: StudyItem): void {
+    this.editingId = item.id;
+    this.editTitle = item.title;
+    this.editDescription = item.description;
+  }
+
+  cancelEdit(): void {
+    this.editingId = null;
+  }
+
+  onUpdate(): void {
+    if (!this.editTitle.trim() || this.editingId === null) return;
+    this.loading = true;
+    this.studyItemService.update(this.editingId, this.editTitle, this.editDescription).subscribe({
+      next: updated => {
+        const index = this.items.findIndex(i => i.id === updated.id);
+        if (index !== -1) this.items[index] = updated;
+        this.editingId = null;
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Erro ao atualizar item.';
+        this.loading = false;
+      }
+    });
+  }
+
+  onDelete(id: number): void {
+    if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    this.studyItemService.delete(id).subscribe({
+      next: () => this.items = this.items.filter(i => i.id !== id),
+      error: () => this.error = 'Erro ao excluir item.'
     });
   }
 

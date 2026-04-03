@@ -5,12 +5,13 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
-  selector: 'app-login',
+  selector: 'app-register',
   standalone: true,
   imports: [FormsModule, CommonModule, RouterLink],
-  templateUrl: './login.html'
+  templateUrl: './register.html'
 })
-export class LoginComponent {
+export class RegisterComponent {
+  name = '';
   email = '';
   password = '';
   error = '';
@@ -21,10 +22,10 @@ export class LoginComponent {
   onSubmit(): void {
     this.error = '';
     this.loading = true;
-    this.auth.login(this.email, this.password).subscribe({
-      next: () => this.router.navigate(['/study-items']),
-      error: () => {
-        this.error = 'Email ou senha inválidos.';
+    this.auth.register({ name: this.name, email: this.email, password: this.password }).subscribe({
+      next: () => this.router.navigate(['/login']),
+      error: (err) => {
+        this.error = err.status === 409 ? 'Email já cadastrado.' : 'Erro ao criar conta. Tente novamente.';
         this.loading = false;
       }
     });
