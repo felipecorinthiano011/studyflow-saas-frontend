@@ -40,7 +40,7 @@ export class StudyItemsComponent implements OnInit {
   }
 
   onCreate(): void {
-    if (!this.title.trim()) return;
+    if (!this.title.trim() || !this.description.trim()) return;
     this.loading = true;
     this.studyItemService.create(this.title, this.description).subscribe({
       next: item => {
@@ -67,7 +67,7 @@ export class StudyItemsComponent implements OnInit {
   }
 
   onUpdate(): void {
-    if (!this.editTitle.trim() || this.editingId === null) return;
+    if (!this.editTitle.trim() || !this.editDescription.trim() || this.editingId === null) return;
     this.loading = true;
     this.studyItemService.update(this.editingId, this.editTitle, this.editDescription).subscribe({
       next: updated => {
