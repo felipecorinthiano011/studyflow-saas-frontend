@@ -29,16 +29,13 @@
       </button>
     </div>
 
-    <!-- Mensagem de erro (com botão fechar) -->
-    <div *ngIf="error" class="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex justify-between items-center">
-      <span>{{ error }}</span>
-      <button (click)="error = ''" class="ml-2 text-red-400 hover:text-red-600 font-bold">✕</button>
-    </div>
-
     <!-- Header da lista -->
     <div *ngIf="!loadingItems && items.length > 0" class="flex justify-between items-center mb-3">
       <span class="text-sm text-gray-500 font-medium">
-        {{ items.length }} item{{ items.length !== 1 ? 's' : '' }}
+        {{ store.totalElements() }} item{{ store.totalElements() !== 1 ? 's' : '' }}
+        <span *ngIf="store.totalPages() > 1" class="text-gray-400">
+          — Página {{ store.currentPage() + 1 }} de {{ store.totalPages() }}
+        </span>
       </span>
       <button (click)="onDeleteAll()"
         class="text-sm text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 px-3 py-1 rounded-lg transition">
@@ -105,6 +102,24 @@
       </div>
 
     </div>
+
+    <!-- Paginação -->
+    <div *ngIf="store.totalPages() > 1" class="flex justify-center items-center gap-3 mt-4">
+      <button (click)="loadPage(store.currentPage() - 1)"
+        [disabled]="store.currentPage() === 0"
+        class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+        ← Anterior
+      </button>
+      <span class="text-sm text-gray-600">
+        {{ store.currentPage() + 1 }} / {{ store.totalPages() }}
+      </span>
+      <button (click)="loadPage(store.currentPage() + 1)"
+        [disabled]="store.last()"
+        class="px-4 py-2 text-sm border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition">
+        Próxima →
+      </button>
+    </div>
+
   </div>
 
   <!-- Footer -->
