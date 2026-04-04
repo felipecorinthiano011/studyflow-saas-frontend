@@ -1,10 +1,16 @@
 <div class="min-h-screen bg-gray-100 flex flex-col">
+
   <!-- Navbar -->
-  <nav class="bg-white shadow px-6 py-4 grid grid-cols-3 items-center">
-    <div></div>
-    <h1 class="text-xl font-bold text-blue-600 text-center">StudyFlow</h1>
-    <div class="flex justify-end">
-      <button (click)="logout()" class="text-sm text-gray-500 hover:text-red-500 transition">Sair</button>
+  <nav class="bg-white shadow px-6 py-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-blue-600">StudyFlow</h1>
+    <div class="flex items-center gap-4">
+      <span *ngIf="currentUser" class="text-sm text-gray-600">
+        Olá, <span class="font-semibold text-gray-800">{{ currentUser.name }}</span>
+      </span>
+      <button (click)="logout()"
+        class="text-sm text-gray-500 hover:text-red-500 transition border border-gray-200 px-3 py-1 rounded-lg">
+        Sair
+      </button>
     </div>
   </nav>
 
@@ -17,25 +23,45 @@
         class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
       <textarea [(ngModel)]="description" placeholder="O que deve ser estudado sobre este assunto *" rows="2"
         class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
-      <button (click)="onCreate()" [disabled]="loading || !title.trim() || !description.trim()"
+      <button (click)="onCreate()" [disabled]="!title.trim() || !description.trim()"
         class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition disabled:opacity-50">
-        {{ loading ? 'Salvando...' : 'Adicionar' }}
+        Adicionar
       </button>
     </div>
 
-    <!-- Mensagem de erro -->
-    <div *ngIf="error" class="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg text-center">
-      {{ error }}
+    <!-- Mensagem de erro (com botão fechar) -->
+    <div *ngIf="error" class="mb-4 p-3 bg-red-50 text-red-600 text-sm rounded-lg flex justify-between items-center">
+      <span>{{ error }}</span>
+      <button (click)="error = ''" class="ml-2 text-red-400 hover:text-red-600 font-bold">✕</button>
+    </div>
+
+    <!-- Header da lista -->
+    <div *ngIf="!loadingItems && items.length > 0" class="flex justify-between items-center mb-3">
+      <span class="text-sm text-gray-500 font-medium">
+        {{ items.length }} item{{ items.length !== 1 ? 's' : '' }}
+      </span>
+      <button (click)="onDeleteAll()"
+        class="text-sm text-red-500 hover:text-red-700 border border-red-200 hover:bg-red-50 px-3 py-1 rounded-lg transition">
+        🗑 Limpar tudo
+      </button>
+    </div>
+
+    <!-- Loading spinner -->
+    <div *ngIf="loadingItems" class="flex flex-col items-center justify-center mt-16 text-gray-400">
+      <div class="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-3"></div>
+      <p class="text-sm">Carregando itens...</p>
     </div>
 
     <!-- Lista vazia -->
-    <div *ngIf="items.length === 0" class="text-center text-gray-400 mt-12">
+    <div *ngIf="!loadingItems && items.length === 0" class="text-center text-gray-400 mt-12">
       <p class="text-4xl mb-3">📚</p>
       <p>Nenhum item de estudo ainda.</p>
+      <p class="text-sm mt-1">Adicione seu primeiro item acima!</p>
     </div>
 
     <!-- Lista de itens -->
-    <div *ngFor="let item of items" class="bg-white rounded-2xl shadow p-5 mb-4">
+    <div *ngFor="let item of items" class="bg-white rounded-2xl shadow p-5 mb-4"
+      [class.opacity-50]="item.id < 0">
 
       <!-- Modo visualização -->
       <div *ngIf="editingId !== item.id">
@@ -43,9 +69,11 @@
           <div class="flex-1">
             <h3 class="font-semibold text-gray-800">{{ item.title }}</h3>
             <p class="text-sm text-gray-500 mt-1">{{ item.description }}</p>
-            <p class="text-xs text-gray-400 mt-2">{{ item.createdAt | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p class="text-xs text-gray-400 mt-2">
+              {{ item.id > 0 ? (item.createdAt | date:'dd/MM/yyyy HH:mm') : 'Salvando...' }}
+            </p>
           </div>
-          <div class="flex gap-2 shrink-0">
+          <div class="flex gap-2 shrink-0" *ngIf="item.id > 0">
             <button (click)="startEdit(item)"
               class="text-sm text-blue-500 hover:text-blue-700 border border-blue-200 px-3 py-1 rounded-lg transition">
               Editar
@@ -62,12 +90,12 @@
       <div *ngIf="editingId === item.id">
         <input type="text" [(ngModel)]="editTitle"
           class="w-full border border-blue-400 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        <textarea [(ngModel)]="editDescription" rows="2" placeholder="O que deve ser estudado sobre este assunto *"
+        <textarea [(ngModel)]="editDescription" rows="2"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
         <div class="flex gap-2">
-          <button (click)="onUpdate()" [disabled]="loading || !editTitle.trim() || !editDescription.trim()"
+          <button (click)="onUpdate()" [disabled]="saving || !editTitle.trim() || !editDescription.trim()"
             class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition disabled:opacity-50">
-            {{ loading ? 'Salvando...' : 'Salvar' }}
+            {{ saving ? 'Salvando...' : 'Salvar' }}
           </button>
           <button (click)="cancelEdit()"
             class="text-sm text-gray-500 hover:text-gray-700 border border-gray-300 px-4 py-1.5 rounded-lg transition">
@@ -81,6 +109,7 @@
 
   <!-- Footer -->
   <footer class="bg-white border-t border-gray-200 py-4 text-center text-sm text-gray-400">
-    Desenvolvido por Felipe Silva 2026
+    Desenvolvido por Felipe Silva © 2026
   </footer>
+
 </div>

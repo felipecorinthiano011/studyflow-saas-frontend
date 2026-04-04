@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { StudyItem, StudyItemService } from '../../services/study-item.service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService, UserProfile } from '../../services/auth.service';
 
 @Component({
   selector: 'app-study-items',
@@ -15,12 +15,15 @@ export class StudyItemsComponent implements OnInit {
   items: StudyItem[] = [];
   title = '';
   description = '';
-  loading = false;
+  saving = false;
+  loadingItems = true;
   error = '';
 
   editingId: number | null = null;
   editTitle = '';
   editDescription = '';
+
+  currentUser: UserProfile | null = null;
 
   constructor(
     private studyItemService: StudyItemService,
@@ -29,29 +32,53 @@ export class StudyItemsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.currentUser = this.auth.getCurrentUser();
     this.loadItems();
   }
 
   loadItems(): void {
+    this.loadingItems = true;
     this.studyItemService.getAll().subscribe({
-      next: items => this.items = items,
-      error: () => this.error = 'Erro ao carregar itens.'
+      next: items => {
+        this.items = items;
+        this.loadingItems = false;
+      },
+      error: () => {
+        this.error = 'Erro ao carregar itens.';
+        this.loadingItems = false;
+      }
     });
   }
 
   onCreate(): void {
     if (!this.title.trim() || !this.description.trim()) return;
-    this.loading = true;
-    this.studyItemService.create(this.title, this.description).subscribe({
+
+    // Optimistic update: exibe o item imediatamente na UI
+    const tempId = -Date.now();
+    const optimisticItem: StudyItem = {
+      id: tempId,
+      title: this.title,
+      description: this.description,
+      createdAt: new Date().toISOString()
+    };
+    this.items.unshift(optimisticItem);
+    const savedTitle = this.title;
+    const savedDesc = this.description;
+    this.title = '';
+    this.description = '';
+
+    this.studyItemService.create(savedTitle, savedDesc).subscribe({
       next: item => {
-        this.items.unshift(item);
-        this.title = '';
-        this.description = '';
-        this.loading = false;
+        // Substitui o item temporário pelo real retornado do servidor
+        const idx = this.items.findIndex(i => i.id === tempId);
+        if (idx !== -1) this.items[idx] = item;
       },
       error: () => {
-        this.error = 'Erro ao criar item.';
-        this.loading = false;
+        // Rollback: remove o item otimista e restaura o formulário
+        this.items = this.items.filter(i => i.id !== tempId);
+        this.title = savedTitle;
+        this.description = savedDesc;
+        this.error = 'Erro ao criar item. Tente novamente.';
       }
     });
   }
@@ -68,26 +95,43 @@ export class StudyItemsComponent implements OnInit {
 
   onUpdate(): void {
     if (!this.editTitle.trim() || !this.editDescription.trim() || this.editingId === null) return;
-    this.loading = true;
+    this.saving = true;
     this.studyItemService.update(this.editingId, this.editTitle, this.editDescription).subscribe({
       next: updated => {
-        const index = this.items.findIndex(i => i.id === updated.id);
-        if (index !== -1) this.items[index] = updated;
+        const idx = this.items.findIndex(i => i.id === updated.id);
+        if (idx !== -1) this.items[idx] = updated;
         this.editingId = null;
-        this.loading = false;
+        this.saving = false;
       },
       error: () => {
         this.error = 'Erro ao atualizar item.';
-        this.loading = false;
+        this.saving = false;
       }
     });
   }
 
   onDelete(id: number): void {
     if (!confirm('Tem certeza que deseja excluir este item?')) return;
+    const removed = this.items.find(i => i.id === id);
+    this.items = this.items.filter(i => i.id !== id);
     this.studyItemService.delete(id).subscribe({
-      next: () => this.items = this.items.filter(i => i.id !== id),
-      error: () => this.error = 'Erro ao excluir item.'
+      error: () => {
+        if (removed) this.items.push(removed);
+        this.error = 'Erro ao excluir item.';
+      }
+    });
+  }
+
+  onDeleteAll(): void {
+    if (this.items.length === 0) return;
+    if (!confirm(`Tem certeza que deseja excluir todos os ${this.items.length} itens? Esta ação não pode ser desfeita.`)) return;
+    const backup = [...this.items];
+    this.items = [];
+    this.studyItemService.deleteAll().subscribe({
+      error: () => {
+        this.items = backup;
+        this.error = 'Erro ao excluir todos os itens.';
+      }
     });
   }
 

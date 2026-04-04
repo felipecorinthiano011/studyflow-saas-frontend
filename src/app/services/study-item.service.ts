@@ -30,4 +30,8 @@ export class StudyItemService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${environment.apiUrl}/study-items/${id}`);
   }
+
+  deleteAll(): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/study-items`);
+  }
 }
