@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://RAILWAY_URL_AQUI'
+  apiUrl: 'https://studyflow-saas-production.up.railway.app'
 };
