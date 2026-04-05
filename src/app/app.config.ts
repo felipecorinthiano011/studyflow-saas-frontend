@@ -12,13 +12,13 @@ if (environment.sentryDsn) {
   Sentry.init({
     dsn: environment.sentryDsn,
     environment: environment.production ? 'production' : 'development',
-    tracesSampleRate: environment.production ? 0.1 : 1.0,
+    tracesSampleRate: environment.production ? 0.1 : 1,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({ maskAllText: false, blockAllMedia: false }),
     ],
     replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+    replaysOnErrorSampleRate: 1,
   });
 }
 
