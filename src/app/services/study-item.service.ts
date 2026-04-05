@@ -22,7 +22,7 @@ export interface PageResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class StudyItemService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   getAll(page = 0, size = 20): Observable<PageResponse<StudyItem>> {
     const params = new HttpParams()

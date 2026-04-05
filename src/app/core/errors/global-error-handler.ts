@@ -3,7 +3,7 @@ import { ToastService } from '../services/toast.service';
 
 @Injectable()
 export class GlobalErrorHandler implements ErrorHandler {
-  private toastService = inject(ToastService);
+  private readonly toastService = inject(ToastService);
 
   handleError(error: unknown): void {
     const message = this.extractMessage(error);

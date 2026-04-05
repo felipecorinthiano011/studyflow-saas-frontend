@@ -18,7 +18,7 @@ export interface UserProfile {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   login(email: string, password: string): Observable<UserProfile> {
     return this.http.post<{ token: string }>(`${environment.apiUrl}/auth/login`, { email, password })
