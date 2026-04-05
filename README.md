@@ -1,68 +1,66 @@
-# StudyFlow Frontend
+# StudyFlow — Frontend
 
-## Repositórios do Projeto
+> Angular 21 SPA for the StudyFlow study management platform.
 
-| Parte | Repositório |
-|-------|-------------|
-| **Backend** (Java Spring Boot) | [felipecorinthiano011/studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) |
-| **Frontend** (Angular + Tailwind) | [felipecorinthiano011/studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) |
-
----
-
-## Descrição
-
-Frontend do **StudyFlow** — SaaS de estudo e aprendizado.  
-Desenvolvido com **Angular** e **Tailwind CSS**, consome a API REST do backend com autenticação via **JWT**.
-
-> **A partir da Semana 4**, o desenvolvimento conta com o suporte do **Claude (Anthropic)** como agente de IA.
+**Live:** https://studyflow-saas-frontend.vercel.app  
+**Backend:** https://studyflow-saas-production.up.railway.app  
+**Backend repo:** [felipecorinthiano011/studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas)
 
 ---
 
-## Como rodar
+## Stack
 
-### Pré-requisitos
+| Technology | Purpose |
+|---|---|
+| Angular 21 (standalone) | SPA framework |
+| NgRx Signal Store | Reactive state management |
+| Tailwind CSS v4 | Utility-first styling |
+| Cypress | E2E testing |
+| @sentry/angular | Error monitoring |
+
+---
+
+## Running Locally
+
+### Prerequisites
 - Node.js 18+
-- Backend rodando em `http://localhost:8080` ([ver repositório do backend](https://github.com/felipecorinthiano011/studyflow-saas))
+- Backend running at `http://localhost:8080` (see [backend repo](https://github.com/felipecorinthiano011/studyflow-saas))
 
-### Instalar dependências
+### Install & start
+
 ```bash
 npm install
-```
-
-### Rodar em desenvolvimento
-```bash
 npx ng serve
 ```
 
-Acesse: `http://localhost:4200`
+Access: http://localhost:4200
+
+### Environment
+
+By default the app points to the production backend.  
+To use a local backend, edit `src/environments/environment.ts`:
+
+```ts
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:8080'
+};
+```
+
+### Run E2E tests
+
+```bash
+npx cypress open   # interactive
+npx cypress run    # headless
+```
 
 ---
 
-## Tecnologias
+## Features
 
-- Angular 21
-- Tailwind CSS v4
-- TypeScript
-- RxJS
-
----
-
-## Plano de desenvolvimento — 8 semanas
-
-### Semana 6 (Atual)
-- Setup do projeto Angular + Tailwind
-- AuthService com login e token JWT no localStorage
-- Interceptor HTTP que injeta Bearer token automaticamente
-- AuthGuard protegendo rotas autenticadas
-- Página de login
-- Página de listagem e criação de study items
-
-### Semana 7
-- CRUD completo no front-end
-- Finalizar autenticação JWT
-- Ajustar estilo com Tailwind
-
-### Semana 8
-- Refatoração e revisão de segurança
-- Documentação final
-- Deploy inicial (AWS / Docker)
+- ✅ Register and login with JWT authentication
+- ✅ Create, list, update and delete study items
+- ✅ Pagination — loads items in pages of 20
+- ✅ Logged-in user always displayed in the navbar
+- ✅ Toast notifications for errors and success actions
+- ✅ Global error handling with `HttpErrorInterceptor`
