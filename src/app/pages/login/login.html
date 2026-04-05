@@ -5,15 +5,15 @@
 
     <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <div class="mb-4">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input type="email" [(ngModel)]="email" name="email" required
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input id="email" type="email" [(ngModel)]="email" name="email" required
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="seu@email.com" />
       </div>
 
       <div class="mb-6">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
-        <input type="password" [(ngModel)]="password" name="password" required
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
+        <input id="password" type="password" [(ngModel)]="password" name="password" required
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           placeholder="••••••" />
       </div>
