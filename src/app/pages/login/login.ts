@@ -16,7 +16,7 @@ export class LoginComponent {
   error = '';
   loading = false;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(private auth: AuthService, private readonly router: Router) {}
 
   onSubmit(): void {
     this.error = '';
